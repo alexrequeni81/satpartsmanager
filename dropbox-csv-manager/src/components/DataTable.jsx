@@ -3,6 +3,7 @@ import { AppContext } from '../context/AppContext';
 import { Search, Plus, Edit2, Trash2, LogOut, RefreshCw, ChevronLeft, ChevronRight, ChevronDown, Key, Check, X, ShieldAlert, Users, Database, Activity } from 'lucide-react';
 import RecordModal from './RecordModal';
 import AdminLoginModal from './AdminLoginModal';
+import logo from '../assets/logo.png';
 
 const DataTable = () => {
     const {
@@ -115,9 +116,12 @@ const DataTable = () => {
 
             <div className="header-stack">
                 <div className="header-row">
-                    <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800, background: 'linear-gradient(135deg, #fff 0%, #cbd5e1 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                        SAT - Repuestos
-                    </h2>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <img src={logo} alt="Logo" style={{ height: '42px', width: 'auto' }} />
+                        <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800, background: 'linear-gradient(135deg, #fff 0%, #cbd5e1 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                            SAT - Repuestos
+                        </h2>
+                    </div>
 
                     <div className="secondary-actions">
                         <button className="glass-button" onClick={() => loadData()} disabled={loading} title="Actualizar">
