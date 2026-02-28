@@ -12,7 +12,13 @@ const RecordModal = ({ isOpen, onClose, columns, initialData, onSave }) => {
         } else {
             // Empty init
             const empty = {};
-            columns.forEach(col => empty[col] = '');
+            columns.forEach(col => {
+                if (col === 'DESCRIPCIÓN') {
+                    empty[col] = { es: '', en: '', fr: '', it: '', de: '' };
+                } else {
+                    empty[col] = '';
+                }
+            });
             setFormData(empty);
         }
     }, [initialData, columns, isOpen]);
@@ -42,13 +48,40 @@ const RecordModal = ({ isOpen, onClose, columns, initialData, onSave }) => {
                     {columns.map(col => (
                         <div key={col}>
                             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>{col.toUpperCase()}</label>
-                            <input
-                                type="text"
-                                name={col}
-                                value={formData[col] || ''}
-                                onChange={handleChange}
-                                className="glass-input"
-                            />
+                            {col === 'DESCRIPCIÓN' ? (
+                                <div style={{ display: 'grid', gap: '0.4rem' }}>
+                                    {['es', 'en', 'fr', 'it', 'de'].map(lang => (
+                                        <div key={lang} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <span style={{ fontSize: '0.65rem', fontWeight: 900, color: 'var(--primary)', width: '22px' }}>{lang.toUpperCase()}</span>
+                                            <input
+                                                type="text"
+                                                placeholder={`Traducción ${lang.toUpperCase()}...`}
+                                                className="glass-input"
+                                                style={{ fontSize: '0.85rem', padding: '0.5rem' }}
+                                                value={formData[col] && typeof formData[col] === 'object' ? (formData[col][lang] || '') : (lang === 'es' ? (formData[col] || '') : '')}
+                                                onChange={(e) => {
+                                                    const currentVal = typeof formData[col] === 'object' ? { ...formData[col] } : { es: (formData[col] || '') };
+                                                    setFormData({
+                                                        ...formData,
+                                                        [col]: { ...currentVal, [lang]: e.target.value }
+                                                    });
+                                                }}
+                                            />
+                                        </div>
+                                    ))}
+                                    <p style={{ margin: '0.3rem 0 0', fontSize: '0.7rem', color: 'var(--warning)', opacity: 0.8 }}>
+                                        💡 Revisa la precisión técnica de las traducciones.
+                                    </p>
+                                </div>
+                            ) : (
+                                <input
+                                    type="text"
+                                    name={col}
+                                    value={formData[col] || ''}
+                                    onChange={handleChange}
+                                    className="glass-input"
+                                />
+                            )}
                         </div>
                     ))}
 

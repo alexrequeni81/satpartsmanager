@@ -37,7 +37,6 @@ const DataTable = () => {
     const filteredData = useMemo(() => {
         let result = data;
 
-        // Filtro por estado (si está activo)
         if (showOnlyPending) {
             result = result.filter(row => row.estado === 'pendiente');
         }
@@ -46,7 +45,15 @@ const DataTable = () => {
 
         const searchWords = searchTerm.toLowerCase().split(/\s+/).filter(Boolean);
         return result.filter(row => {
-            const rowValuesString = Object.values(row).join(' ').toLowerCase();
+            // Buscador inteligente: busca en todos los campos y en todas las versiones del idioma si es JSON
+            const valuesToSearch = Object.entries(row).flatMap(([key, val]) => {
+                if (key === 'DESCRIPCIÓN' && typeof val === 'object' && val !== null) {
+                    return Object.values(val);
+                }
+                return [val];
+            });
+
+            const rowValuesString = valuesToSearch.join(' ').toLowerCase();
             return searchWords.every(word => rowValuesString.includes(word));
         });
     }, [data, searchTerm, showOnlyPending]);
@@ -250,7 +257,11 @@ const DataTable = () => {
                                                                     <ShieldAlert size={14} style={{ color: 'var(--warning)' }} />
                                                                     {row[col]}
                                                                 </div>
-                                                            ) : row[col]}
+                                                            ) : (
+                                                                col === 'DESCRIPCIÓN' && typeof row[col] === 'object' && row[col] !== null
+                                                                    ? (row[col][language] || row[col]['es'] || '')
+                                                                    : row[col]
+                                                            )}
                                                         </td>
                                                     ))}
                                                     <td style={{ padding: '1rem', display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
