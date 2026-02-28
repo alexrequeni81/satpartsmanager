@@ -1,39 +1,54 @@
-# SAT Parts Manager
+# SAT - Gestión de Repuestos
 
-Sistema de gestión y búsqueda de repuestos técnicos con sincronización en tiempo real y panel de administración.
+Sistema profesional de gestión, búsqueda y moderación de repuestos técnicos con sincronización en tiempo real.
+
+🌐 **Demo en vivo**: [https://alexrequeni81.github.io/satpartsmanager/](https://alexrequeni81.github.io/satpartsmanager/)
 
 ## 🚀 Características Principales
 
-- **Buscador "Mágico"**: Interfaz optimizada para búsquedas rápidas de referencias y descripciones.
-- **Sincronización en Tiempo Real**: Visualización de usuarios conectados y estado de la base de datos mediante Supabase Presence.
-- **Moderación de Administrador**: Sistema de validación de registros nuevos o editados antes de su publicación definitiva.
-- **Diseño Glassmorphism**: Estética moderna y premium con soporte para modo oscuro natural.
-- **Optimización Móvil**: Interfaz adaptativa que se ajusta a smartphones y tablets.
+- **🔍 Buscador "Mágico"**: Interfaz ultra-rápida optimizada para localizar referencias, máquinas o descripciones al instante.
+- **⚡ Sincronización Realtime**: Panel de estado con conteo de usuarios online, registros totales y estado de conexión mediante **Supabase Presence**.
+- **🛡️ Sistema de Moderación**: Los registros añadidos por usuarios externos entran en modo "Pendiente", requiriendo validación de administrador para ser públicos.
+- **✨ Diseño Premium (UI/UX)**: Estética moderna basada en **Glassmorphism**, con efectos de desenfoque, gradientes y tipografía refinada.
+- **🎨 Branding Personalizado**: Logo de alta calidad integrado con efectos de resplandor (glow) y animaciones de interacción.
+- **📱 Responsive Design**: Experiencia optimizada para escritorio, tablets y smartphones.
 
 ## 🛠️ Tecnologías
 
-- **Frontend**: React.js, Vite, Lucide Icons.
-- **Backend/DB**: Supabase (PostgreSQL + Realtime).
-- **Estilos**: Vanilla CSS con variables avanzadas.
+- **Frontend**: React.js (Vite)
+- **Backend/Base de Datos**: Supabase (PostgreSQL + Realtime)
+- **Iconografía**: Lucide React
+- **Estilos**: Vanilla CSS con variables CSS3 avanzadas
 
 ## 📦 Estructura del Proyecto
 
 ```text
 web_sat/
-├── dropbox-csv-manager/   # Aplicación web (React)
-├── check_csv.js           # Scripts de utilidad y validación
-├── final_sync.js          # Script de sincronización masiva CSV -> Supabase
-└── sat_repuestos.csv      # Archivo de datos base (ejemplo)
+├── dropbox-csv-manager/   # Aplicación principal (React + Vite)
+├── README.md               # Documentación general
+├── .gitignore              # Configuración de seguridad Git
+├── check_csv.js            # Scripts de utilidad
+└── sat_repuestos.csv       # Fuente de datos inicial
 ```
 
-## ⚙️ Configuración
+## 🚀 Despliegue y Desarrollo
 
-1. Entra en `dropbox-csv-manager` y ejecuta `npm install`.
-2. Inicia el servidor de desarrollo con `npm run dev`.
-3. Configura tus credenciales de Supabase en la interfaz web (se guardan de forma local y segura).
+### Local
+1. Clona el repositorio.
+2. Navega a `dropbox-csv-manager` y ejecuta `npm install`.
+3. Inicia con `npm run dev`.
 
-## 🛡️ Moderación
-Los registros añadidos por usuarios externos aparecen como **Pendientes** y requieren la aprobación de un administrador (icono de llave) para ser visibles para todos.
+### Producción (GitHub Pages)
+El proyecto está configurado para desplegarse automáticamente:
+```bash
+npm run deploy
+```
+
+## � Seguridad y Moderación
+El acceso de administrador está protegido por una clave de sesión. Solo los administradores pueden:
+1. Validar registros pendientes.
+2. Editar información existente.
+3. Eliminar entradas obsoletas.
 
 ---
-Desarrollado para la gestión eficiente de repuestos técnicos.
+© 2026 - Herramienta desarrollada para la optimización del servicio técnico SAT.
