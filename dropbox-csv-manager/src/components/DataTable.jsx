@@ -8,7 +8,7 @@ import logo from '../assets/logo.png';
 const DataTable = () => {
     const {
         data, columns, loading, logout, addRecord, updateRecord, deleteRecord, loadData,
-        isAdmin, loginAsAdmin, logoutAdmin, approveRecord, rejectRecord, onlineUsersCount, t
+        isAdmin, loginAsAdmin, logoutAdmin, approveRecord, rejectRecord, onlineUsersCount, t, language
     } = useContext(AppContext);
 
     const [searchTerm, setSearchTerm] = useState('');
