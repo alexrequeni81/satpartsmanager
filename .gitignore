@@ -1,0 +1,22 @@
+# Dependencias
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Configuración y Secretos
+.env
+supabase.txt
+*.log
+
+# Datos (Opcional: puedes quitarlos si quieres subirlos)
+*.csv
+*.xlsx
+check_*.js
+final_sync.js
+compare_data.js
+
+# Editores
+.vscode/
+.idea/
+.DS_Store
