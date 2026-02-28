@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { initSupabase, getSupabase } from '../services/supabaseClient';
+import { translations } from '../translations';
 
 export const AppContext = createContext();
 
@@ -14,6 +15,12 @@ export const AppProvider = ({ children }) => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [onlineUsersCount, setOnlineUsersCount] = useState(1);
     const [sessionId] = useState(() => Math.random().toString(36).substring(2, 15));
+    const [language, setLanguage] = useState(() => {
+        const saved = localStorage.getItem('app-lang');
+        if (saved) return saved;
+        const browserLang = navigator.language.split('-')[0];
+        return translations[browserLang] ? browserLang : 'es';
+    });
 
     useEffect(() => {
         if (supabaseUrl && supabaseKey) {
@@ -54,6 +61,24 @@ export const AppProvider = ({ children }) => {
         localStorage.setItem('sb_key', key);
         setSupabaseUrl(url);
         setSupabaseKey(key);
+    };
+
+    const changeLanguage = (lang) => {
+        if (translations[lang]) {
+            setLanguage(lang);
+            localStorage.setItem('app-lang', lang);
+        }
+    };
+
+    const t = (key, params = {}) => {
+        const dict = translations[language] || translations.es;
+        let text = dict[key] || key;
+
+        Object.entries(params).forEach(([k, v]) => {
+            text = text.replace(`{${k}}`, v);
+        });
+
+        return text;
     };
 
     const logout = () => {
@@ -229,6 +254,7 @@ export const AppProvider = ({ children }) => {
     return (
         <AppContext.Provider value={{
             supabaseUrl, supabaseKey, data, columns, loading, error, isAuthenticated, isAdmin, onlineUsersCount,
+            language, t, changeLanguage,
             verifyAndLoad, logout, addRecord, updateRecord, deleteRecord, loadData,
             loginAsAdmin, logoutAdmin, approveRecord, rejectRecord
         }}>

@@ -8,7 +8,7 @@ import logo from '../assets/logo.png';
 const DataTable = () => {
     const {
         data, columns, loading, logout, addRecord, updateRecord, deleteRecord, loadData,
-        isAdmin, loginAsAdmin, logoutAdmin, approveRecord, rejectRecord, onlineUsersCount
+        isAdmin, loginAsAdmin, logoutAdmin, approveRecord, rejectRecord, onlineUsersCount, t
     } = useContext(AppContext);
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -83,7 +83,7 @@ const DataTable = () => {
     };
 
     const handleDelete = async (referencia) => {
-        if (window.confirm('¿Estás seguro de que deseas eliminar este registro?')) {
+        if (window.confirm(t('confirmDelete'))) {
             await deleteRecord(referencia);
         }
     };
@@ -101,15 +101,15 @@ const DataTable = () => {
         <div className="container animate-fade-in">
             {/* Status Banner */}
             <div className="status-banner">
-                <div className="status-item" title="Usuarios conectados">
+                <div className="status-item" title={t('onlineUsers')}>
                     <Users size={16} />
                     <span>{onlineUsersCount}</span>
                 </div>
-                <div className="status-item" title="Total registros">
+                <div className="status-item" title={t('totalRecords')}>
                     <Database size={16} />
                     <span>{data.length}</span>
                 </div>
-                <div className="status-item" title="Estado de la base de datos">
+                <div className="status-item" title={t('dbStatus')}>
                     <div className="status-dot"></div>
                 </div>
             </div>
@@ -122,24 +122,24 @@ const DataTable = () => {
                             alt="SAT Logo"
                             className="app-logo"
                             onClick={() => window.location.reload()}
-                            title="Recargar App"
+                            title={t('reloadApp')}
                         />
                         <h2 className="brand-title">
-                            SAT - Repuestos
+                            {t('appTitle')}
                         </h2>
                     </div>
 
                     <div className="secondary-actions">
-                        <button className="glass-button" onClick={() => loadData()} disabled={loading} title="Actualizar">
+                        <button className="glass-button" onClick={() => loadData()} disabled={loading} title={t('refresh')}>
                             <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
                         </button>
 
-                        <button className={`glass-button ${isAdmin ? 'active' : ''}`} onClick={isAdmin ? logoutAdmin : () => setIsAdminLoginOpen(true)} title="Administrador" style={{ position: 'relative' }}>
+                        <button className={`glass-button ${isAdmin ? 'active' : ''}`} onClick={isAdmin ? logoutAdmin : () => setIsAdminLoginOpen(true)} title={t('adminMode')} style={{ position: 'relative' }}>
                             <Key size={18} style={{ color: isAdmin ? 'var(--primary)' : 'inherit' }} />
                             {pendingCount > 0 && <span className="notification-badge">{pendingCount}</span>}
                         </button>
 
-                        <button className="glass-button" onClick={logout} style={{ color: 'var(--danger)' }} title="Cerrar sesión">
+                        <button className="glass-button" onClick={logout} style={{ color: 'var(--danger)' }} title={t('logout')}>
                             <LogOut size={18} />
                         </button>
                     </div>
@@ -150,7 +150,7 @@ const DataTable = () => {
                         <Search style={{ position: 'absolute', left: '1.2rem', color: 'var(--primary)', zIndex: 10 }} size={24} />
                         <input
                             type="text"
-                            placeholder="¿Qué pieza buscas hoy? Comienza la magia..."
+                            placeholder={t('searchPlaceholder')}
                             className="glass-input magical-search"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -158,7 +158,7 @@ const DataTable = () => {
                     </div>
 
                     <button className="glass-button primary" onClick={handleAdd} disabled={loading} style={{ height: '56px', padding: '0 1.5rem', borderRadius: '16px', fontSize: '1.1rem' }}>
-                        <Plus size={22} /> <span className="responsive-hide">Nuevo Registro</span>
+                        <Plus size={22} /> <span className="responsive-hide">{t('newRecord')}</span>
                     </button>
 
                     {isAdmin && (
@@ -172,10 +172,10 @@ const DataTable = () => {
                                 border: showOnlyPending ? '1px solid var(--warning)' : '1px solid var(--glass-border)',
                                 borderRadius: '16px'
                             }}
-                            title={showOnlyPending ? "Ver todos los registros" : "Ver solo pendientes"}
+                            title={showOnlyPending ? t('viewAllTooltip') : t('viewPendingTooltip')}
                         >
                             <ShieldAlert size={22} />
-                            <span className="responsive-hide">{showOnlyPending ? "Ver Todos" : "Pendientes"}</span>
+                            <span className="responsive-hide">{showOnlyPending ? t('showAll') : t('showPending')}</span>
                         </button>
                     )}
                 </div>
@@ -184,9 +184,9 @@ const DataTable = () => {
             {(searchTerm.trim() === '' && !showOnlyPending) ? (
                 <div className="glass-panel" style={{ textAlign: 'center', padding: '5rem 2rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
                     <Search size={64} style={{ opacity: 0.2, color: 'var(--primary)' }} />
-                    <h3 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--text-main)' }}>Buscador de Repuestos</h3>
+                    <h3 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--text-main)' }}>{t('searchingTitle')}</h3>
                     <p style={{ maxWidth: '400px', margin: '0 auto' }}>
-                        Escribe una referencia o máquina para buscar entre los {data.length} registros.
+                        {t('searchingPrompt', { count: data.length })}
                     </p>
                 </div>
             ) : (
@@ -205,14 +205,14 @@ const DataTable = () => {
                                             {col}
                                         </th>
                                     ))}
-                                    <th style={{ padding: '1rem', width: '120px', textAlign: 'center' }}>ACCIONES</th>
+                                    <th style={{ padding: '1rem', width: '120px', textAlign: 'center' }}>{t('actions')}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {currentData.length === 0 ? (
                                     <tr>
                                         <td colSpan={columns.length + 2} style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
-                                            No se encontraron repuestos para "{searchTerm}".
+                                            {t('noResults', { searchTerm })}
                                         </td>
                                     </tr>
                                 ) : (
@@ -294,12 +294,12 @@ const DataTable = () => {
                                                                     );
                                                                 })}
                                                                 <div className="detail-item">
-                                                                    <span className="detail-label">Estado</span>
+                                                                    <span className="detail-label">{t('status')}</span>
                                                                     <span className="detail-value" style={{
                                                                         color: isPending ? 'var(--warning)' : 'var(--success)',
                                                                         fontWeight: 'bold'
                                                                     }}>
-                                                                        {isPending ? 'PENDIENTE REVISIÓN' : 'APROBADO'}
+                                                                        {isPending ? t('pendingReview') : t('approved')}
                                                                     </span>
                                                                 </div>
                                                             </div>
@@ -318,7 +318,7 @@ const DataTable = () => {
                     {filteredData.length > 0 && (
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(255, 255, 255, 0.3)', borderTop: '1px solid var(--glass-border)', flexWrap: 'wrap', gap: '1rem' }}>
                             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                                {Math.min((currentPage - 1) * rowsPerPage + 1, filteredData.length)}-{Math.min(currentPage * rowsPerPage, filteredData.length)} de {filteredData.length}
+                                {Math.min((currentPage - 1) * rowsPerPage + 1, filteredData.length)}-{Math.min(currentPage * rowsPerPage, filteredData.length)} {t('of')} {filteredData.length}
                             </span>
                             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                                 <button
@@ -326,17 +326,19 @@ const DataTable = () => {
                                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                                     disabled={currentPage === 1}
                                     style={{ padding: '0.3rem', borderRadius: '4px', opacity: currentPage === 1 ? 0.5 : 1 }}
+                                    title={t('prevPage')}
                                 >
                                     <ChevronLeft size={16} />
                                 </button>
                                 <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>
-                                    Pág {currentPage} / {totalPages}
+                                    {t('pageOf', { current: currentPage, total: totalPages })}
                                 </span>
                                 <button
                                     className="glass-button"
                                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                                     disabled={currentPage === totalPages}
                                     style={{ padding: '0.3rem', borderRadius: '4px', opacity: currentPage === totalPages ? 0.5 : 1 }}
+                                    title={t('nextPage')}
                                 >
                                     <ChevronRight size={16} />
                                 </button>

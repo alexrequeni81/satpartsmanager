@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { X, Save } from 'lucide-react';
+import { AppContext } from '../context/AppContext';
 
 const RecordModal = ({ isOpen, onClose, columns, initialData, onSave }) => {
+    const { t } = useContext(AppContext);
     const [formData, setFormData] = useState({});
 
     useEffect(() => {
@@ -30,7 +32,7 @@ const RecordModal = ({ isOpen, onClose, columns, initialData, onSave }) => {
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
             <div className="glass-panel animate-fade-in" style={{ padding: '2rem', width: '90%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                    <h2 style={{ margin: 0 }}>{initialData ? 'Editar Repuesto' : 'Nuevo Repuesto'}</h2>
+                    <h2 style={{ margin: 0 }}>{initialData ? t('editRecord') : t('newRecord')}</h2>
                     <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
                         <X size={24} />
                     </button>
@@ -52,10 +54,10 @@ const RecordModal = ({ isOpen, onClose, columns, initialData, onSave }) => {
 
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1.5rem' }}>
                         <button type="button" onClick={onClose} className="glass-button" style={{ color: 'var(--text-muted)' }}>
-                            Cancelar
+                            {t('cancel')}
                         </button>
                         <button type="submit" className="glass-button primary">
-                            <Save size={18} /> Guardar
+                            <Save size={18} /> {t('save')}
                         </button>
                     </div>
                 </form>

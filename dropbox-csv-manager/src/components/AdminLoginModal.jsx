@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { X, Lock, Key } from 'lucide-react';
+import { AppContext } from '../context/AppContext';
 
 const AdminLoginModal = ({ isOpen, onClose, onLogin }) => {
+    const { t } = useContext(AppContext);
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
@@ -15,7 +17,7 @@ const AdminLoginModal = ({ isOpen, onClose, onLogin }) => {
             setError('');
             onClose();
         } else {
-            setError('Contraseña incorrecta');
+            setError(t('wrongPassword'));
         }
     };
 
@@ -37,8 +39,8 @@ const AdminLoginModal = ({ isOpen, onClose, onLogin }) => {
                     <div style={{ width: '60px', height: '60px', background: 'var(--primary)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem', color: 'white' }}>
                         <Lock size={30} />
                     </div>
-                    <h2 style={{ margin: 0 }}>Acceso Administrador</h2>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Introduce la clave para gestionar registros</p>
+                    <h2 style={{ margin: 0 }}>{t('adminAccess')}</h2>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{t('adminPrompt')}</p>
                 </div>
 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -50,7 +52,7 @@ const AdminLoginModal = ({ isOpen, onClose, onLogin }) => {
                                 autoFocus
                                 className="glass-input"
                                 style={{ paddingLeft: '2.5rem' }}
-                                placeholder="Contraseña de admin"
+                                placeholder={t('passwordPlaceholder')}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
@@ -59,7 +61,7 @@ const AdminLoginModal = ({ isOpen, onClose, onLogin }) => {
                     </div>
 
                     <button type="submit" className="glass-button primary" style={{ width: '100%', justifyContent: 'center', padding: '1rem' }}>
-                        Entrar
+                        {t('login')}
                     </button>
                 </form>
             </div>
