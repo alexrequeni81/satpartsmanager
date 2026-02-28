@@ -145,7 +145,19 @@ export const AppProvider = ({ children }) => {
                 } else hasMore = false;
             }
 
-            setData(allRecords);
+            // Procesar las descripciones para convertirlas de String JSON a Objeto si es necesario
+            const processedRecords = allRecords.map(r => {
+                if (r['DESCRIPCIÓN'] && typeof r['DESCRIPCIÓN'] === 'string' && r['DESCRIPCIÓN'].trim().startsWith('{')) {
+                    try {
+                        r['DESCRIPCIÓN'] = JSON.parse(r['DESCRIPCIÓN']);
+                    } catch (e) {
+                        // Si falla, lo dejamos como está
+                    }
+                }
+                return r;
+            });
+
+            setData(processedRecords);
             if (allRecords.length > 0) {
                 const allKeys = Object.keys(allRecords[0]);
                 const displayCols = allKeys.filter(k => k !== 'id' && k !== 'created_at' && k !== 'estado');
