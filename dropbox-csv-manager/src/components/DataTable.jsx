@@ -116,9 +116,15 @@ const DataTable = () => {
 
             <div className="header-stack">
                 <div className="header-row">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <img src={logo} alt="Logo" style={{ height: '42px', width: 'auto' }} />
-                        <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800, background: 'linear-gradient(135deg, #fff 0%, #cbd5e1 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                    <div className="brand-container">
+                        <img
+                            src={logo}
+                            alt="SAT Logo"
+                            className="app-logo"
+                            onClick={() => window.location.reload()}
+                            title="Recargar App"
+                        />
+                        <h2 className="brand-title">
                             SAT - Repuestos
                         </h2>
                     </div>

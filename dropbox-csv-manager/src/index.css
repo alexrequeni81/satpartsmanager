@@ -266,6 +266,55 @@ h4 {
   gap: 1rem;
 }
 
+/* Logo & Branding Styles */
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.app-logo {
+  height: 85px;
+  /* Más grande en escritorio para lucir el diseño */
+  width: auto;
+  filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.4));
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+}
+
+.app-logo:hover {
+  transform: scale(1.1) rotate(2deg);
+  filter: drop-shadow(0 0 25px rgba(59, 130, 246, 0.7));
+}
+
+.brand-title {
+  margin: 0;
+  font-size: 2.5rem;
+  /* Un pelo más grande para acompañar al logo */
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 768px) {
+  .brand-container {
+    gap: 0.8rem;
+  }
+
+  .app-logo {
+    height: 42px;
+    /* Mantiene la usabilidad en móviles */
+  }
+
+  .brand-title {
+    font-size: 1.4rem;
+  }
+}
+
 .status-banner {
   position: absolute;
   top: 1rem;
