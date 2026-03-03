@@ -5,8 +5,7 @@ import { translations } from '../translations';
 export const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-    const [supabaseUrl, setSupabaseUrl] = useState(localStorage.getItem('sb_url') || '');
-    const [supabaseKey, setSupabaseKey] = useState(localStorage.getItem('sb_key') || '');
+    // Ya no necesitamos URLs locales pues usamos las del sistema/env
     const [data, setData] = useState([]);
     const [columns, setColumns] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -23,9 +22,16 @@ export const AppProvider = ({ children }) => {
     });
 
     useEffect(() => {
-        if (supabaseUrl && supabaseKey) {
-            verifyAndLoad(supabaseUrl, supabaseKey);
-        }
+        const load = async () => {
+            const sb = initSupabase();
+            if (sb) {
+                setIsAuthenticated(true);
+                await loadData();
+            } else {
+                setError("Configuración de Supabase no detectada.");
+            }
+        };
+        load();
     }, []);
 
     // Presence tracking

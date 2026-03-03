@@ -5,17 +5,27 @@ let currentUrl = null;
 let currentAnonKey = null;
 
 export const initSupabase = (url, anonKey) => {
-    if (!supabaseInstance || currentUrl !== url || currentAnonKey !== anonKey) {
-        supabaseInstance = createClient(url, anonKey);
-        currentUrl = url;
-        currentAnonKey = anonKey;
+    // Si no se pasan parámetros, intentar usar variables de entorno de Vite
+    const sbUrl = url || import.meta.env.VITE_SUPABASE_URL;
+    const sbKey = anonKey || import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+    if (!sbUrl || !sbKey) {
+        console.error("Supabase credentials missing!");
+        return null;
+    }
+
+    if (!supabaseInstance || currentUrl !== sbUrl || currentAnonKey !== sbKey) {
+        supabaseInstance = createClient(sbUrl, sbKey);
+        currentUrl = sbUrl;
+        currentAnonKey = sbKey;
     }
     return supabaseInstance;
 };
 
 export const getSupabase = () => {
     if (!supabaseInstance) {
-        throw new Error("Supabase client no está inicializado.");
+        // Intento de auto-inicialización con env vars
+        return initSupabase();
     }
     return supabaseInstance;
 };
