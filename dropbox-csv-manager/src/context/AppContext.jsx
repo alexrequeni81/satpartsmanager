@@ -92,189 +92,186 @@ export const AppProvider = ({ children }) => {
     };
 
     const verifyAndLoad = async (url, key) => {
-        // Redirigimos a initSupabase si se pasan parámetros manualmente
-        initSupabase(url, key);
-        await loadData();
+        setLoading(true);
+        setError(null);
+        try {
+            const supabase = initSupabase(url, key);
+            if (!supabase) throw new Error("Connection failed");
+
+            const { error: testError } = await supabase.from('repuestos').select('*').limit(1);
+            if (testError) throw new Error("Connection failed");
+
+            setIsAuthenticated(true);
+            await loadData();
+        } catch (err) {
+            setError("Error al conectar con Supabase.");
+            setIsAuthenticated(false);
+        } finally {
+            setLoading(false);
+        }
     };
-    setLoading(true);
-    setError(null);
-    try {
-        const supabase = initSupabase(url, key);
-        const { error: testError } = await supabase.from('repuestos').select('*').limit(1);
-        if (testError) throw new Error("Connection failed");
 
-        saveConfig(url, key);
-        setIsAuthenticated(true);
-        await loadData();
-    } catch (err) {
-        setError("Error al conectar con Supabase. Revisa tus credenciales.");
-        setIsAuthenticated(false);
-    } finally {
-        setLoading(false);
-    }
-};
-
-const loginAsAdmin = (password) => {
-    if (password === 'admin123') { // Contraseña sencilla por defecto
-        setIsAdmin(true);
-        return true;
-    }
-    return false;
-};
-
-const logoutAdmin = () => {
-    setIsAdmin(false);
-};
-
-const loadData = async () => {
-    setLoading(true);
-    try {
-        const supabase = getSupabase();
-        let allRecords = [];
-        let hasMore = true;
-        let page = 0;
-        const pageSize = 1000;
-
-        while (hasMore) {
-            const { data: repuestos, error: fetchError } = await supabase
-                .from('repuestos')
-                .select('*')
-                .range(page * pageSize, (page + 1) * pageSize - 1);
-
-            if (fetchError) throw fetchError;
-            if (repuestos && repuestos.length > 0) {
-                allRecords = [...allRecords, ...repuestos];
-                if (repuestos.length < pageSize) hasMore = false;
-                else page++;
-            } else hasMore = false;
+    const loginAsAdmin = (password) => {
+        if (password === 'admin123') { // Contraseña sencilla por defecto
+            setIsAdmin(true);
+            return true;
         }
+        return false;
+    };
 
-        // Procesar las descripciones para convertirlas de String JSON a Objeto si es necesario
-        const processedRecords = allRecords.map(r => {
-            if (r['DESCRIPCIÓN'] && typeof r['DESCRIPCIÓN'] === 'string' && r['DESCRIPCIÓN'].trim().startsWith('{')) {
-                try {
-                    r['DESCRIPCIÓN'] = JSON.parse(r['DESCRIPCIÓN']);
-                } catch (e) {
-                    // Si falla, lo dejamos como está
-                }
+    const logoutAdmin = () => {
+        setIsAdmin(false);
+    };
+
+    const loadData = async () => {
+        setLoading(true);
+        try {
+            const supabase = getSupabase();
+            let allRecords = [];
+            let hasMore = true;
+            let page = 0;
+            const pageSize = 1000;
+
+            while (hasMore) {
+                const { data: repuestos, error: fetchError } = await supabase
+                    .from('repuestos')
+                    .select('*')
+                    .range(page * pageSize, (page + 1) * pageSize - 1);
+
+                if (fetchError) throw fetchError;
+                if (repuestos && repuestos.length > 0) {
+                    allRecords = [...allRecords, ...repuestos];
+                    if (repuestos.length < pageSize) hasMore = false;
+                    else page++;
+                } else hasMore = false;
             }
-            return r;
-        });
 
-        setData(processedRecords);
-        if (allRecords.length > 0) {
-            const allKeys = Object.keys(allRecords[0]);
-            const displayCols = allKeys.filter(k => k !== 'id' && k !== 'created_at' && k !== 'estado');
-            setColumns(displayCols);
+            // Procesar las descripciones para convertirlas de String JSON a Objeto si es necesario
+            const processedRecords = allRecords.map(r => {
+                if (r['DESCRIPCIÓN'] && typeof r['DESCRIPCIÓN'] === 'string' && r['DESCRIPCIÓN'].trim().startsWith('{')) {
+                    try {
+                        r['DESCRIPCIÓN'] = JSON.parse(r['DESCRIPCIÓN']);
+                    } catch (e) {
+                        // Si falla, lo dejamos como está
+                    }
+                }
+                return r;
+            });
+
+            setData(processedRecords);
+            if (allRecords.length > 0) {
+                const allKeys = Object.keys(allRecords[0]);
+                const displayCols = allKeys.filter(k => k !== 'id' && k !== 'created_at' && k !== 'estado');
+                setColumns(displayCols);
+            }
+        } catch (err) {
+            setError("Error al cargar los datos.");
+        } finally {
+            setLoading(false);
         }
-    } catch (err) {
-        setError("Error al cargar los datos.");
-    } finally {
-        setLoading(false);
-    }
-};
+    };
 
-const addRecord = async (recordData) => {
-    setLoading(true);
-    try {
-        const supabase = getSupabase();
-        // Si es admin, puede crear directamente aprobado. Si no, pendiente.
-        const newRecord = { ...recordData, estado: isAdmin ? 'aprobado' : 'pendiente' };
-        const { error: insertError } = await supabase.from('repuestos').insert([newRecord]);
-        if (insertError) throw insertError;
-        await loadData();
-    } catch (err) {
-        setError(`Error al añadir: ${err.message}`);
-    } finally {
-        setLoading(false);
-    }
-};
+    const addRecord = async (recordData) => {
+        setLoading(true);
+        try {
+            const supabase = getSupabase();
+            // Si es admin, puede crear directamente aprobado. Si no, pendiente.
+            const newRecord = { ...recordData, estado: isAdmin ? 'aprobado' : 'pendiente' };
+            const { error: insertError } = await supabase.from('repuestos').insert([newRecord]);
+            if (insertError) throw insertError;
+            await loadData();
+        } catch (err) {
+            setError(`Error al añadir: ${err.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-const updateRecord = async (referenciaOrig, updatedRecord) => {
-    setLoading(true);
-    try {
-        const supabase = getSupabase();
-        // Al editar, si no es admin, vuelve a 'pendiente' para revisión
-        const recordToUpdate = { ...updatedRecord };
+    const updateRecord = async (referenciaOrig, updatedRecord) => {
+        setLoading(true);
+        try {
+            const supabase = getSupabase();
+            // Al editar, si no es admin, vuelve a 'pendiente' para revisión
+            const recordToUpdate = { ...updatedRecord };
+            if (!isAdmin) {
+                recordToUpdate.estado = 'pendiente';
+            }
+
+            const { error: updateError } = await supabase
+                .from('repuestos')
+                .update(recordToUpdate)
+                .eq('REFERENCIA', referenciaOrig);
+
+            if (updateError) throw updateError;
+            await loadData();
+        } catch (err) {
+            setError(`Error al actualizar: ${err.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const deleteRecord = async (referenciaOrig) => {
+        // Solo el administrador debería poder borrar físicamente según el flujo de seguridad propuesto
         if (!isAdmin) {
-            recordToUpdate.estado = 'pendiente';
+            setError("Solo el administrador puede eliminar registros.");
+            return;
         }
+        setLoading(true);
+        try {
+            const supabase = getSupabase();
+            const { error: deleteError } = await supabase
+                .from('repuestos')
+                .delete()
+                .eq('REFERENCIA', referenciaOrig);
 
-        const { error: updateError } = await supabase
-            .from('repuestos')
-            .update(recordToUpdate)
-            .eq('REFERENCIA', referenciaOrig);
+            if (deleteError) throw deleteError;
+            await loadData();
+        } catch (err) {
+            setError(`Error al eliminar: ${err.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        if (updateError) throw updateError;
-        await loadData();
-    } catch (err) {
-        setError(`Error al actualizar: ${err.message}`);
-    } finally {
-        setLoading(false);
-    }
-};
+    const approveRecord = async (referencia) => {
+        if (!isAdmin) return;
+        setLoading(true);
+        try {
+            const supabase = getSupabase();
+            const { error } = await supabase
+                .from('repuestos')
+                .update({ estado: 'aprobado' })
+                .eq('REFERENCIA', referencia);
+            if (error) throw error;
+            await loadData();
+        } catch (err) {
+            setError(`Error al aprobar: ${err.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-const deleteRecord = async (referenciaOrig) => {
-    // Solo el administrador debería poder borrar físicamente según el flujo de seguridad propuesto
-    if (!isAdmin) {
-        setError("Solo el administrador puede eliminar registros.");
-        return;
-    }
-    setLoading(true);
-    try {
-        const supabase = getSupabase();
-        const { error: deleteError } = await supabase
-            .from('repuestos')
-            .delete()
-            .eq('REFERENCIA', referenciaOrig);
+    const rejectRecord = async (referencia, row) => {
+        if (!isAdmin) return;
+        // Si el registro fue añadido nuevo y rechazado, lo borramos.
+        // Si era una edición de uno existente... el flujo actual sobreescribe el original, 
+        // lo que dificulta "revertir" sin historial. 
+        // Para simplificar, "Rechazar" aquí simplemente borra el registro si es nuevo o lo mantiene en pendiente.
+        // Como no tenemos historial de cambios, si un admin "Rechaza" una edición, 
+        // probablemente quiera borrarlo o contactar al usuario.
+        // Implementamos borrado por ahora para la demo.
+        await deleteRecord(referencia);
+    };
 
-        if (deleteError) throw deleteError;
-        await loadData();
-    } catch (err) {
-        setError(`Error al eliminar: ${err.message}`);
-    } finally {
-        setLoading(false);
-    }
-};
-
-const approveRecord = async (referencia) => {
-    if (!isAdmin) return;
-    setLoading(true);
-    try {
-        const supabase = getSupabase();
-        const { error } = await supabase
-            .from('repuestos')
-            .update({ estado: 'aprobado' })
-            .eq('REFERENCIA', referencia);
-        if (error) throw error;
-        await loadData();
-    } catch (err) {
-        setError(`Error al aprobar: ${err.message}`);
-    } finally {
-        setLoading(false);
-    }
-};
-
-const rejectRecord = async (referencia, row) => {
-    if (!isAdmin) return;
-    // Si el registro fue añadido nuevo y rechazado, lo borramos.
-    // Si era una edición de uno existente... el flujo actual sobreescribe el original, 
-    // lo que dificulta "revertir" sin historial. 
-    // Para simplificar, "Rechazar" aquí simplemente borra el registro si es nuevo o lo mantiene en pendiente.
-    // Como no tenemos historial de cambios, si un admin "Rechaza" una edición, 
-    // probablemente quiera borrarlo o contactar al usuario.
-    // Implementamos borrado por ahora para la demo.
-    await deleteRecord(referencia);
-};
-
-return (
-    <AppContext.Provider value={{
-        supabaseUrl, supabaseKey, data, columns, loading, error, isAuthenticated, isAdmin, onlineUsersCount,
-        language, t, changeLanguage,
-        verifyAndLoad, logout, addRecord, updateRecord, deleteRecord, loadData,
-        loginAsAdmin, logoutAdmin, approveRecord, rejectRecord
-    }}>
-        {children}
-    </AppContext.Provider>
-);
+    return (
+        <AppContext.Provider value={{
+            supabaseUrl, supabaseKey, data, columns, loading, error, isAuthenticated, isAdmin, onlineUsersCount,
+            language, t, changeLanguage,
+            verifyAndLoad, logout, addRecord, updateRecord, deleteRecord, loadData,
+            loginAsAdmin, logoutAdmin, approveRecord, rejectRecord
+        }}>
+            {children}
+        </AppContext.Provider>
+    );
 };
