@@ -276,7 +276,7 @@ const DataTable = () => {
                                                             </>
                                                         ) : (
                                                             <>
-                                                                <button onClick={() => handleEdit(row)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--primary)' }} title="Editar">
+                                                                <button onClick={() => handleEdit(row)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--primary)' }} title={isAdmin ? "Editar" : "Sugerir cambio"}>
                                                                     <Edit2 size={18} />
                                                                 </button>
                                                                 {isAdmin && (

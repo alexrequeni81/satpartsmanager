@@ -90,7 +90,7 @@ const RecordModal = ({ isOpen, onClose, columns, initialData, onSave }) => {
                             {t('cancel')}
                         </button>
                         <button type="submit" className="glass-button primary">
-                            <Save size={18} /> {t('save')}
+                            <Save size={18} /> {isAdmin ? t('save') : 'Sugerir'}
                         </button>
                     </div>
                 </form>

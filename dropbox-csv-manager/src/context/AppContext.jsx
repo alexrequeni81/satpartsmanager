@@ -26,6 +26,15 @@ export const AppProvider = ({ children }) => {
             const sb = initSupabase();
             if (sb) {
                 setIsAuthenticated(true);
+                // Verificar sesión existente para Admin
+                const { data: { session } } = await sb.auth.getSession();
+                setIsAdmin(!!session);
+
+                // Escuchar cambios de auth
+                sb.auth.onAuthStateChange((event, session) => {
+                    setIsAdmin(!!session);
+                });
+
                 await loadData();
             } else {
                 setError("Configuración de Supabase no detectada.");
@@ -111,15 +120,25 @@ export const AppProvider = ({ children }) => {
         }
     };
 
-    const loginAsAdmin = (password) => {
-        if (password === 'admin123') { // Contraseña sencilla por defecto
+    const loginAsAdmin = async (email, password) => {
+        try {
+            const supabase = getSupabase();
+            const { error } = await supabase.auth.signInWithPassword({
+                email,
+                password
+            });
+            if (error) throw error;
             setIsAdmin(true);
             return true;
+        } catch (err) {
+            setError("Credenciales de administrador incorrectas.");
+            return false;
         }
-        return false;
     };
 
-    const logoutAdmin = () => {
+    const logoutAdmin = async () => {
+        const supabase = getSupabase();
+        await supabase.auth.signOut();
         setIsAdmin(false);
     };
 
