@@ -266,7 +266,7 @@ export const AppProvider = ({ children }) => {
 
     return (
         <AppContext.Provider value={{
-            supabaseUrl, supabaseKey, data, columns, loading, error, isAuthenticated, isAdmin, onlineUsersCount,
+            data, columns, loading, error, isAuthenticated, isAdmin, onlineUsersCount,
             language, t, changeLanguage,
             verifyAndLoad, logout, addRecord, updateRecord, deleteRecord, loadData,
             loginAsAdmin, logoutAdmin, approveRecord, rejectRecord
