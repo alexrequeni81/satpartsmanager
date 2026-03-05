@@ -300,7 +300,11 @@ const DataTable = () => {
                                                                     return (
                                                                         <div key={col} className={className}>
                                                                             <span className="detail-label">{col}</span>
-                                                                            <span className="detail-value">{row[col] || '-'}</span>
+                                                                            <span className="detail-value">
+                                                                                {col === 'DESCRIPCIÓN' && typeof row[col] === 'object' && row[col] !== null
+                                                                                    ? (row[col][language] || row[col]['es'] || '-')
+                                                                                    : (row[col] || '-')}
+                                                                            </span>
                                                                         </div>
                                                                     );
                                                                 })}
